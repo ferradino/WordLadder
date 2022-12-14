@@ -11,7 +11,7 @@ struct Word {
     string
         value;
     int
-        ptr;
+        ptr{};
     LinearList<int>
         list;
 };
@@ -31,8 +31,7 @@ void createWordList() {
 
     wordsFile.open(fileName);
     if (!wordsFile) {
-        cout << fileName + " could not be opened" << endl;
-        exit(1);
+        throw runtime_error("Error: " + fileName + " could not be opened");
     }
 
     for (auto & word : wordList) {
@@ -43,7 +42,9 @@ void createWordList() {
     wordsFile.close();
 }
 
-bool adjacent(const string&  _word, const string& _adjacentWord) {
+// Checks wether the two words have a difference of one letter/character
+// If there is only a one letter difference, return true
+bool adjacent(const string& _word, const string& _adjacentWord) {
     int
         i = 0, hammingDistance = 0;
 
@@ -55,20 +56,23 @@ bool adjacent(const string&  _word, const string& _adjacentWord) {
     return hammingDistance == 4;
 }
 
+// Loops through all the words in the word list
+// Compares the word to all other words
+// If the two words are adjacent, then add adjecent word to the word's list
 void buildAdjacentList() {
     for (int i = 0; i < numWords; i++) {
         for (int j = 0; j < i; j++) {
             if (adjacent(wordList[i].value, wordList[j].value)) {
-                wordList[j].list.insert(0, i);
-                wordList[i].list.insert(0, j);
+                wordList[j].list.insert(wordList[j].list.size(), i);
+                wordList[i].list.insert(wordList[i].list.size(), j);
             }
         }
     }
 }
 
-// searches for word inside wordlist
-// if word is found, return true and update Word variable
-// else return false
+// Searches for word inside wordlist
+// If word is found, return true and update Word variable
+// Else return false
 bool search(const string& _string, int &_word) {
     for (int i = 0; i < numWords; i++) {
         if (wordList[i].value == _string) {
@@ -141,4 +145,5 @@ int main() {
     genLadder(wordOne, wordTwo);
 
     return 0;
+
 }
